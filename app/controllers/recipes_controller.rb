@@ -1,5 +1,7 @@
 class RecipesController < ApplicationController
     
+    skip_before_action :verify_authenticity_token
+    
     def error
         head 404
     end
