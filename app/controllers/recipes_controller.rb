@@ -9,7 +9,6 @@ class RecipesController < ApplicationController
     def show_one
         begin
             recipe = Recipe.find(params[:id])     
-            binding.pry       
             render :json => {
                 "message": "Recipe details by id",
                 "recipe": [recipe]
@@ -32,6 +31,11 @@ class RecipesController < ApplicationController
         begin
             if params[:title].nil? and params[:making_time].nil? and params[:serves].nil? and \
                 params[:ingredients].nil? and params[:cost].nil?
+                render :json => {
+                    "message": "Recipe creation failed!",
+                    "required": "title, making_time, serves, ingredients, cost"
+                }    
+            else
                 recipe = Recipe.create(
                     title: params[:title],
                     making_time: params[:making_time],
@@ -43,11 +47,6 @@ class RecipesController < ApplicationController
                     "message": "Recipe successfully created!",
                     "recipe": [recipe]
                 }
-            else
-                render :json => {
-                    "message": "Recipe creation failed!",
-                    "required": "title, making_time, serves, ingredients, cost"
-                }    
             end
         rescue => exception
             render :json => {
