@@ -8,10 +8,11 @@ class RecipesController < ApplicationController
 
     def show_one
         begin
-            recipe = Recipe.find(params[:id])            
+            recipe = Recipe.find(params[:id])     
+            binding.pry       
             render :json => {
                 "message": "Recipe details by id",
-                "recipe": recipe
+                "recipe": [recipe]
             }
         rescue => exception
             render :json => { "message":"No Recipe found" }
@@ -21,7 +22,7 @@ class RecipesController < ApplicationController
     def show_all 
         begin
             recipe = Recipe.all
-            render :json => {"recipe": recipe}
+            render :json => {"recipes": recipe}
         rescue => exception
             render :json => { "message":"No Recipe found" }
         end
@@ -29,17 +30,25 @@ class RecipesController < ApplicationController
 
     def create
         begin
-            recipe = Recipe.create(
-                title: params[:title],
-                making_time: params[:making_time],
-                serves: params[:serves],
-                ingredients: params[:ingredients],
-                cost: params[:cost],      
-            )
-            render :json => {
-                "message": "Recipe successfully created!",
-                "recipe": recipe
-            }
+            if params[:title].nil? and params[:making_time].nil? and params[:serves].nil? and \
+                params[:ingredients].nil? and params[:cost].nil?
+                recipe = Recipe.create(
+                    title: params[:title],
+                    making_time: params[:making_time],
+                    serves: params[:serves],
+                    ingredients: params[:ingredients],
+                    cost: params[:cost],      
+                )
+                render :json => {
+                    "message": "Recipe successfully created!",
+                    "recipe": [recipe]
+                }
+            else
+                render :json => {
+                    "message": "Recipe creation failed!",
+                    "required": "title, making_time, serves, ingredients, cost"
+                }    
+            end
         rescue => exception
             render :json => {
                 "message": "Recipe creation failed!",
